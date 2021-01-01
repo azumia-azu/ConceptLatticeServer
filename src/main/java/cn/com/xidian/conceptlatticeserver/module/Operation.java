@@ -20,7 +20,7 @@ public class Operation {
     @ApiModelProperty(value = "operate", example = "zoom_in")
     private String operate;
 
-    @ApiModelProperty(value = "name", example = "the name of grpah, default: graph-static")
+    @ApiModelProperty(value = "name", example = "the name of graph, default: graph-static")
     private String name = "graph-static";
 
 @ApiModelProperty(value = "data", example ="{\n" +

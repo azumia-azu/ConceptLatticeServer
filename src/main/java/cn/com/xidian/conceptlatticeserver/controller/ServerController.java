@@ -4,8 +4,6 @@ import cn.com.xidian.conceptlatticeserver.module.LatticeMap;
 import cn.com.xidian.conceptlatticeserver.module.Operation;
 import cn.com.xidian.conceptlatticeserver.module.ResponseFormat;
 import cn.com.xidian.conceptlatticeserver.service.ServerService;
-import fca.ConceptLatticeAlgo;
-import com.alibaba.fastjson.JSONObject;
 import fca.exception.AlreadyExistsException;
 import fca.exception.GTreeConstructionException;
 import fca.exception.InvalidTypeException;
@@ -32,7 +30,7 @@ public class ServerController {
 
     @ResponseBody
     @GetMapping(path = "/graph")
-    @ApiOperation(value = "获得默认图", httpMethod = "GET")
+    @ApiOperation(value = "获得图", httpMethod = "GET")
     @ApiResponse(code = 200, message = "OK", response = ResponseFormat.class)
     public ResponseFormat getGraphHandler(HttpServletRequest request, @RequestParam("name") String name) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
         return new ResponseFormat(200, "OK", ServerService.HandleGetGraphService(request.getSession(), name));
@@ -48,7 +46,7 @@ public class ServerController {
 
     @ResponseBody
     @PutMapping(path = "/graph")
-    @ApiOperation(value="操作图", httpMethod = "PUT")
+    @ApiOperation(value = "操作图", httpMethod = "PUT")
     @ApiResponse(code = 200, message = "OK", response = ResponseFormat.class)
     public ResponseFormat postGraphHandler(HttpServletRequest request, @RequestBody @ApiParam Operation object) throws Exception {
         var session = request.getSession();
