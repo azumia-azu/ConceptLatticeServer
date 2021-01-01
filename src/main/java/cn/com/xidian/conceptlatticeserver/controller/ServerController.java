@@ -1,5 +1,6 @@
 package cn.com.xidian.conceptlatticeserver.controller;
 
+import cn.com.xidian.conceptlatticeserver.module.LatticeMap;
 import cn.com.xidian.conceptlatticeserver.module.Operation;
 import cn.com.xidian.conceptlatticeserver.module.ResponseFormat;
 import cn.com.xidian.conceptlatticeserver.service.ServerService;
@@ -22,22 +23,38 @@ import java.io.IOException;
 public class ServerController {
 
     @ResponseBody
-    @GetMapping(path = "/graph")
-    @ApiOperation(value = "获得图", httpMethod = "GET")
+    @GetMapping(path = "/graph/static")
+    @ApiOperation(value = "获得默认图", httpMethod = "GET")
     @ApiResponse(code = 200, message = "OK", response = ResponseFormat.class)
-    public ResponseFormat getGraphHandler(HttpServletRequest request) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
-        return new ResponseFormat(200, "OK", ServerService.HandleGetGraphService(request.getSession()));
+    public ResponseFormat getGraphStaticHandler(HttpServletRequest request) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
+        return new ResponseFormat(200, "OK", ServerService.HandleGetGraphStaticService(request.getSession()));
     }
 
     @ResponseBody
-    @PostMapping(path = "/graph")
-    @ApiOperation(value="操作图", httpMethod = "POST")
+    @GetMapping(path = "/graph")
+    @ApiOperation(value = "获得默认图", httpMethod = "GET")
+    @ApiResponse(code = 200, message = "OK", response = ResponseFormat.class)
+    public ResponseFormat getGraphHandler(HttpServletRequest request, @RequestParam("name") String name) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
+        return new ResponseFormat(200, "OK", ServerService.HandleGetGraphService(request.getSession(), name));
+    }
+
+    @ResponseBody
+    @PostMapping
+    @ApiOperation(value = "创建图", httpMethod = "POST")
+    @ApiResponse(code = 200, message = "OK", response = ResponseFormat.class)
+    public ResponseFormat setGraphHandler(HttpServletRequest request, @RequestBody @ApiParam LatticeMap map) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
+        return new ResponseFormat(200, "OK", ServerService.HandleSetGraphService(request.getSession(), map));
+    }
+
+    @ResponseBody
+    @PutMapping(path = "/graph")
+    @ApiOperation(value="操作图", httpMethod = "PUT")
     @ApiResponse(code = 200, message = "OK", response = ResponseFormat.class)
     public ResponseFormat postGraphHandler(HttpServletRequest request, @RequestBody @ApiParam Operation object) throws Exception {
         var session = request.getSession();
         return new ResponseFormat(200, "OK", switch (object.getOperate()) {
-            case "zoom_in" -> ServerService.ZoomIn(session, object.getData());
-            case "zoom_out" -> ServerService.ZoomOut(session, object.getData());
+            case "zoom_in" -> ServerService.ZoomIn(session, object.getData(), object.getName());
+            case "zoom_out" -> ServerService.ZoomOut(session, object.getData(), object.getName());
             default -> throw new Exception();
         });
     }

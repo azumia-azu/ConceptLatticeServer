@@ -1,6 +1,8 @@
 package cn.com.xidian.conceptlatticeserver.service;
 
 import cn.com.xidian.conceptlatticeserver.module.ConceptLattice;
+import cn.com.xidian.conceptlatticeserver.module.LatticeMap;
+import cn.com.xidian.conceptlatticeserver.module.Operation;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import fca.core.util.BasicSet;
@@ -15,15 +17,27 @@ import java.util.Hashtable;
 
 @Service
 public class ServerService {
-    public static JSONArray HandleGetGraphService(HttpSession session) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
-        return GetGraph(session);
+    public static JSONArray HandleGetGraphStaticService(HttpSession session) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
+        return GetGraph(session, "graph-static");
     }
 
-    private static JSONArray GetGraph(HttpSession session) throws AlreadyExistsException, InvalidTypeException, GTreeConstructionException, IOException {
-        var data = (ConceptLattice) session.getAttribute("graph");
-        if (data == null) {
+    public static JSONArray HandleGetGraphService(HttpSession session, String name) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
+        return GetGraph(session, name);
+    }
+
+    public static JSONArray HandleSetGraphService(HttpSession session, LatticeMap map) throws AlreadyExistsException, InvalidTypeException, IOException, GTreeConstructionException {
+        var data = ConceptLattice.InitNew(map.getName(), map.getObjects(), map.getAttributes(), map.getRelations());
+        session.setAttribute(map.getName(), data);
+        return GetGraph(session, map.getName());
+    }
+
+    private static JSONArray GetGraph(HttpSession session, String name) throws AlreadyExistsException, InvalidTypeException, GTreeConstructionException, IOException {
+        var data = (ConceptLattice) session.getAttribute(name);
+        if (data == null && name.equals("graph-static")) {
             data = ConceptLattice.InitWithFiles();
-            session.setAttribute("graph", data);
+            session.setAttribute(name, data);
+        } else {
+            return null;
         }
         var nodeList = data.getInstance().getGraphicalLattice().getNodesList();
         var res = new JSONArray();
@@ -37,26 +51,26 @@ public class ServerService {
         return res;
     }
 
-    public static JSONArray ZoomIn(HttpSession session, JSONObject operation) throws InvalidTypeException, GTreeConstructionException, AlreadyExistsException, IOException {
-        var data = (ConceptLattice) session.getAttribute("graph");
+    public static JSONArray ZoomIn(HttpSession session, JSONObject operation, String name) throws InvalidTypeException, GTreeConstructionException, AlreadyExistsException, IOException {
+        var data = (ConceptLattice) session.getAttribute(name);
         if (data == null) {
             throw new NullPointerException();
         }
 
         data.getInstance().zoomIn(operation.getString("root"), parseTable((JSONArray) operation.get("sub")));
-        session.setAttribute("graph", data);
-        return GetGraph(session);
+        session.setAttribute(name, data);
+        return GetGraph(session, name);
     }
 
-    public static JSONArray ZoomOut(HttpSession session, JSONObject operation) throws InvalidTypeException, GTreeConstructionException, AlreadyExistsException, IOException {
-        var data = (ConceptLattice) session.getAttribute("graph");
+    public static JSONArray ZoomOut(HttpSession session, JSONObject operation, String name) throws InvalidTypeException, GTreeConstructionException, AlreadyExistsException, IOException {
+        var data = (ConceptLattice) session.getAttribute(name);
         if (data == null) {
             throw new NullPointerException();
         }
 
         data.getInstance().zoomOut(operation.getString("root"), parseTable((JSONArray) operation.get("sub")));
-        session.setAttribute("graph", data);
-        return GetGraph(session);
+        session.setAttribute(name, data);
+        return GetGraph(session, name);
     }
 
     private static Hashtable<String, BasicSet> parseTable(JSONArray arr) {

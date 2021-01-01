@@ -30,6 +30,10 @@ public class ConceptLattice {
         return new ConceptLattice(readLocal());
     }
 
+    public static ConceptLattice InitNew(String name, Vector<String> object, Vector<String> attribute, Vector<Vector<String>> values) throws AlreadyExistsException, InvalidTypeException {
+        return new ConceptLattice(new ConceptLatticeAlgo(name, object, attribute, values));
+    }
+
     private static ConceptLatticeAlgo readLocal() throws InvalidTypeException, GTreeConstructionException, AlreadyExistsException, IOException {
         File file = new File("./src/main/resources/static/test7_copy.slf");
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
