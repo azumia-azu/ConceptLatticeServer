@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Vector;
 
 @Getter
 @Setter
 @ApiModel
-public class LatticeMap {
+public class LatticeMap implements Serializable {
     @NotNull(message = "图名不能为空")
     @ApiModelProperty(value = "name", example = "32ffw3-kjio44-b7rane-pkan8b")
     private String name;
@@ -33,4 +34,21 @@ public class LatticeMap {
         "[0, 1, 1, 0, 0],\n" +
         "... etc. objects for row, attributes for col, 0/1 for has connected or not as [][]String Array'")
     private Vector<Vector<String>> relations;
+
+    public Vector<Vector<String>> getRelations() {
+        Vector<Vector<String>> values = new Vector<>();
+        for(int i = 0; i < objects.size(); i++){
+            Vector<String> rowValues = new Vector<>();
+            for(String s: relations.get(i)){
+                if(s.equals("1")) {
+                    rowValues.add("true");
+                }else{
+                    rowValues.add("");
+                }
+            }
+            values.add(rowValues);
+        }
+
+        return values;
+    }
 }

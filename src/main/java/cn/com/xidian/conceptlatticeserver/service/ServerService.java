@@ -11,6 +11,7 @@ import fca.exception.GTreeConstructionException;
 import fca.exception.InvalidTypeException;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Hashtable;
@@ -26,19 +27,19 @@ public class ServerService {
     }
 
     public static JSONArray HandleSetGraphService(HttpSession session, LatticeMap map) throws AlreadyExistsException, InvalidTypeException, IOException, GTreeConstructionException {
-        var data = ConceptLattice.InitNew(map.getName(), map.getObjects(), map.getAttributes(), map.getRelations());
-        session.setAttribute(map.getName(), data);
+        session.setAttribute(map.getName(), map);
         return GetGraph(session, map.getName());
     }
 
     private static JSONArray GetGraph(HttpSession session, String name) throws AlreadyExistsException, InvalidTypeException, GTreeConstructionException, IOException {
-        var data = (ConceptLattice) session.getAttribute(name);
-        if (data == null && name.equals("graph-static")) {
-            data = ConceptLattice.InitWithFiles();
-            session.setAttribute(name, data);
-        } else {
+        var map = (LatticeMap) session.getAttribute(name);
+        if (!name.equals("graph-static") && map == null) {
             return null;
         }
+        var data = switch (name) {
+            case "graph-static" -> ConceptLattice.InitWithFiles();
+            default -> ConceptLattice.InitNew(map.getName(), map.getObjects(), map.getAttributes(), map.getRelations());
+        };
         var nodeList = data.getInstance().getGraphicalLattice().getNodesList();
         var res = new JSONArray();
         for (var node : nodeList) {
@@ -51,8 +52,17 @@ public class ServerService {
         return res;
     }
 
+    private static ConceptLattice getLattice(HttpSession session, String name) throws AlreadyExistsException, InvalidTypeException {
+        var map = (LatticeMap) session.getAttribute(name);
+        if (map == null) {
+            return null;
+        } else {
+            return ConceptLattice.InitNew(map.getName(), map.getObjects(), map.getAttributes(), map.getRelations());
+        }
+    }
+
     public static JSONArray ZoomIn(HttpSession session, JSONObject operation, String name) throws InvalidTypeException, GTreeConstructionException, AlreadyExistsException, IOException {
-        var data = (ConceptLattice) session.getAttribute(name);
+        var data = getLattice(session, name);
         if (data == null) {
             throw new NullPointerException();
         }
@@ -63,7 +73,7 @@ public class ServerService {
     }
 
     public static JSONArray ZoomOut(HttpSession session, JSONObject operation, String name) throws InvalidTypeException, GTreeConstructionException, AlreadyExistsException, IOException {
-        var data = (ConceptLattice) session.getAttribute(name);
+        var data = getLattice(session, name);
         if (data == null) {
             throw new NullPointerException();
         }

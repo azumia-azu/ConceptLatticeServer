@@ -37,7 +37,7 @@ public class ServerController {
     }
 
     @ResponseBody
-    @PostMapping
+    @PostMapping(path = "/graph")
     @ApiOperation(value = "创建图", httpMethod = "POST")
     @ApiResponse(code = 200, message = "OK", response = ResponseFormat.class)
     public ResponseFormat setGraphHandler(HttpServletRequest request, @RequestBody @ApiParam LatticeMap map) throws InvalidTypeException, IOException, GTreeConstructionException, AlreadyExistsException {
