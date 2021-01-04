@@ -275,6 +275,10 @@ public abstract class Context {
 		return (values.elementAt(objIdx)).elementAt(attIdx);
 	}
 
+	public Vector<Vector<String>> getValues() {
+		return values;
+	}
+
 	public boolean isModified() {
 		return isModified;
 	}

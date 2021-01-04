@@ -14,6 +14,7 @@ import fca.exception.LMLogger;
 import fca.gui.util.DialogBox;
 import fca.messages.CoreMessages;
 import fca.messages.GUIMessages;
+import lombok.Getter;
 
 /**
  * Viewer de contextes
@@ -26,6 +27,7 @@ import fca.messages.GUIMessages;
  * @version 1.4
  */
 
+@Getter
 public class BinaryContext extends Context {
 	public static final String TRUE = "true"; //$NON-NLS-1$
 	public static final String FALSE = ""; //$NON-NLS-1$

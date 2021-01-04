@@ -34,6 +34,10 @@ public class ConceptLattice {
         return new ConceptLattice(new ConceptLatticeAlgo(name, object, attribute, values));
     }
 
+    public ConceptLattice(SerializableBinaryContext context) throws AlreadyExistsException, InvalidTypeException {
+        instance = new ConceptLatticeAlgo(context.getName(), context.getObjects(), context.getAttributes(), context.getRelations());
+    }
+
     private static ConceptLatticeAlgo readLocal() throws InvalidTypeException, GTreeConstructionException, AlreadyExistsException, IOException {
         File file = new File("./src/main/resources/static/test7_copy.slf");
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));

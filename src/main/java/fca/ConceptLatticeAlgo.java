@@ -8,10 +8,12 @@ import fca.exception.GTreeConstructionException;
 import fca.exception.InvalidTypeException;
 import fca.gui.lattice.element.GraphicalLattice;
 import fca.gui.lattice.element.LatticeStructure;
+import lombok.Getter;
 
 import java.util.Hashtable;
 import java.util.Vector;
 
+@Getter
 public class ConceptLatticeAlgo {
 
     /**
@@ -44,9 +46,5 @@ public class ConceptLatticeAlgo {
         lattice.zoomOut(p, ws);
         LatticeStructure struct = new LatticeStructure(lattice,lattice.getContext(), LatticeStructure.BEST);
         graphicalLattice = new GraphicalLattice(lattice, struct);
-    }
-
-    public GraphicalLattice getGraphicalLattice() {
-        return graphicalLattice;
     }
 }
